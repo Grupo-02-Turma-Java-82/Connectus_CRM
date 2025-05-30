@@ -15,10 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/* import com.generation.crm_backend.model.UsuarioLogin; */
 import com.generation.crm_backend.model.Usuario;
 import com.generation.crm_backend.repository.UsuarioRepository;
-/* import com.generation.crm_backend.service.UsuarioService; */
+import com.generation.crm_backend.service.UsuarioService;
 
 import jakarta.validation.Valid;
 
@@ -29,6 +28,9 @@ public class UsuarioController {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+
+	@Autowired
+	private UsuarioService usuarioService;
 	
 	@GetMapping("/all")
 	public ResponseEntity <List<Usuario>> getAll(){
@@ -44,8 +46,6 @@ public class UsuarioController {
 			.orElse(ResponseEntity.notFound().build());
 	}
 	
-    
-
 	@PostMapping("/cadastrar")
 	public ResponseEntity<Usuario> postUsuario(@RequestBody @Valid Usuario usuario) {
 
@@ -55,10 +55,10 @@ public class UsuarioController {
 
 	}
 
-	@PutMapping("/atualizar")
-	public ResponseEntity<Usuario> putUsuario(@Valid @RequestBody Usuario usuario) {
+	@PutMapping("/autualizar/{id}")
+	public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
 		
-		return usuarioService.atualizarUsuario(usuario)
+		return usuarioService.atualizarUsuario(id, usuario)
 			.map(resposta -> ResponseEntity.status(HttpStatus.OK).body(resposta))
 			.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 		
