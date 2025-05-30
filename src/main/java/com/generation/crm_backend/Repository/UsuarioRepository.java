@@ -1,4 +1,4 @@
-package com.generation.crm_backend.Repository;
+package com.generation.crm_backend.repository;
 
 import java.util.Optional;
 

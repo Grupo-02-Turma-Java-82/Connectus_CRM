@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.generation.crm_backend.model.UsuarioLogin;
+/* import com.generation.crm_backend.model.UsuarioLogin; */
 import com.generation.crm_backend.model.Usuario;
 import com.generation.crm_backend.repository.UsuarioRepository;
-import com.generation.crm_backend.service.UsuarioService;
+/* import com.generation.crm_backend.service.UsuarioService; */
 
 import jakarta.validation.Valid;
 
