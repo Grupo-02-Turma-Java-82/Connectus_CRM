@@ -36,7 +36,7 @@ public class UsuarioService {
             return Optional.empty();
     }
         // Salva no banco (senha sem criptografia)
-        return Optional.of(usuarioRepository.save(usuario));
+        return Optional.of(usuarioRepository.save(usuario)); 
     }
 
     // Atualizar um usuário existente
