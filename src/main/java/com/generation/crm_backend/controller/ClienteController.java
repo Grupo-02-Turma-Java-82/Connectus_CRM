@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.generation.crm_backend.model.Cliente;
 import com.generation.crm_backend.repository.ClienteRepository;
 
 import org.springframework.web.bind.annotation.GetMapping;
