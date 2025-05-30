@@ -30,12 +30,17 @@ public class UsuarioService {
     }
 
     // Criar um novo usuário
-    public Usuario createUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
+    	  // Verifica se já existe o usuário
+        if (usuarioRepository.findByEmailIgnoreCase(usuario.getEmail()).isPresent()) {
+            return Optional.empty();
+    }
+        // Salva no banco (senha sem criptografia)
+        return Optional.of(usuarioRepository.save(usuario));
     }
 
     // Atualizar um usuário existente
-    public Optional<Usuario> updateUsuario(Long id, Usuario usuarioAtualizado) {
+    public Optional<Usuario> atualizarUsuario(Long id, Usuario usuarioAtualizado) {
         return usuarioRepository.findById(id).map(usuario -> {
             usuario.setNome(usuarioAtualizado.getNome());
             usuario.setEmail(usuarioAtualizado.getEmail());
