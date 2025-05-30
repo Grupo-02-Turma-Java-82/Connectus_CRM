@@ -2,6 +2,7 @@ package com.generation.crm_backend.service;
 
 import com.generation.crm_backend.model.Usuario;
 import com.generation.crm_backend.repository.UsuarioRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
