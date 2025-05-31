@@ -60,7 +60,7 @@ public class Cliente {
   @Column(length = 5000)
   private String foto;
 
-  @Pattern(regexp = "^(\\(\\d{2}\\)\\s?)?(\\d{4,5}-?\\d{4})$|^\\d{10,11}$", message = "O telefone deve estar em um formato válido, como (XX) XXXXX-XXXX, XXXXXXXXXXX ou XX XXXXX-XXXX.")
+  @Pattern(regexp = "^((\\(\\d{2}\\)\\s?)|(\\d{2}\\s))?\\d{4,5}-?\\d{4}$|^\\d{10,11}$", message = "O telefone deve estar em um formato válido, como (XX) XXXXX-XXXX, XXXXXXXXXXX ou XX XXXXX-XXXX.")
   @Size(min = 8, max = 20, message = "O telefone deve ter entre 8 e 20 caracteres.")
   @Column(length = 20)
   private String telefone;
@@ -140,7 +140,7 @@ public class Cliente {
   }
 
   public void setCpf(String cpf) {
-    this.cpf = cpf;
+    this.cpf = (cpf != null && !cpf.trim().isEmpty()) ? cpf.replaceAll("[^0-9]", "") : null;
   }
 
   public String getCnpj() {
@@ -148,7 +148,7 @@ public class Cliente {
   }
 
   public void setCnpj(String cnpj) {
-    this.cnpj = cnpj;
+    this.cnpj = (cnpj != null && !cnpj.trim().isEmpty()) ? cnpj.replaceAll("[^0-9]", "") : null;
   }
 
   public Float getLeadScore() {
@@ -174,8 +174,8 @@ public class Cliente {
         ", nome='" + nome + '\'' +
         ", email='" + email + '\'' +
         ", tipoPessoa=" + tipoPessoa +
-        (cpf != null ? ", cpf='" + cpf + '\'' : "") +
-        (cnpj != null ? ", cnpj='" + cnpj + '\'' : "") +
+        ", cpf='" + cpf + '\'' +
+        ", cnpj='" + cnpj + '\'' +
         ", createdAt=" + createdAt +
         '}';
   }
