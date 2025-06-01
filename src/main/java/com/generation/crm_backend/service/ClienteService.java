@@ -1,12 +1,16 @@
 package com.generation.crm_backend.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.crm_backend.dto.ClienteRequestDTO;
@@ -22,19 +26,44 @@ public class ClienteService {
   private ClienteRepository clienteRepository;
 
   @Transactional(readOnly = true)
-  public List<Cliente> getAll() {
-    return clienteRepository.findAll();
+  public Page<Cliente> getAll(int numeroPagina, int tamanhoPagina, String campoOrdenacao, String direcaoOrdenacao) {
+
+    if (!StringUtils.hasText(campoOrdenacao)) {
+      campoOrdenacao = "id";
+    }
+
+    if (!StringUtils.hasText(direcaoOrdenacao)
+        || (!direcaoOrdenacao.equalsIgnoreCase("asc") && !direcaoOrdenacao.equalsIgnoreCase("desc"))) {
+      direcaoOrdenacao = "asc";
+    }
+
+    Sort sort = Sort.by(Sort.Direction.fromString(direcaoOrdenacao.toUpperCase()), campoOrdenacao);
+    Pageable pageable = PageRequest.of(numeroPagina, tamanhoPagina, sort);
+    return clienteRepository.findAll(pageable);
   }
 
   @Transactional(readOnly = true)
   public Cliente getById(Long id) {
     return clienteRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado", null));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado com o ID: " + id));
   }
 
   @Transactional(readOnly = true)
-  public List<Cliente> getAllByNome(String nome) {
-    return clienteRepository.findAllByNomeContainingIgnoreCase(nome);
+  public Page<Cliente> getAllByNome(String nome, int numeroPagina, int tamanhoPagina, String campoOrdenacao,
+      String direcaoOrdenacao) {
+
+    if (!StringUtils.hasText(campoOrdenacao)) {
+      campoOrdenacao = "nome";
+    }
+
+    if (!StringUtils.hasText(direcaoOrdenacao)
+        || (!direcaoOrdenacao.equalsIgnoreCase("asc") && !direcaoOrdenacao.equalsIgnoreCase("desc"))) {
+      direcaoOrdenacao = "asc";
+    }
+
+    Sort sort = Sort.by(Sort.Direction.fromString(direcaoOrdenacao.toUpperCase()), campoOrdenacao);
+    Pageable pageable = PageRequest.of(numeroPagina, tamanhoPagina, sort);
+    return clienteRepository.findAllByNomeContainingIgnoreCase(nome, pageable);
   }
 
   @Transactional(readOnly = true)
@@ -52,82 +81,122 @@ public class ClienteService {
   }
 
   @Transactional(readOnly = true)
-  public List<Cliente> getAllByTipoPessoa(TipoPessoa tipoPessoa) {
-    return clienteRepository.findAllByTipoPessoa(tipoPessoa);
+  public Page<Cliente> getAllByTipoPessoa(TipoPessoa tipoPessoa, int numeroPagina, int tamanhoPagina,
+      String campoOrdenacao,
+      String direcaoOrdenacao) {
+    if (!StringUtils.hasText(campoOrdenacao)) {
+      campoOrdenacao = "nome";
+    }
+
+    if (!StringUtils.hasText(direcaoOrdenacao)
+        || (!direcaoOrdenacao.equalsIgnoreCase("asc") && !direcaoOrdenacao.equalsIgnoreCase("desc"))) {
+      direcaoOrdenacao = "asc";
+    }
+
+    Sort sort = Sort.by(Sort.Direction.fromString(direcaoOrdenacao.toUpperCase()), campoOrdenacao);
+    Pageable pageable = PageRequest.of(numeroPagina, tamanhoPagina, sort);
+    return clienteRepository.findAllByTipoPessoa(tipoPessoa, pageable);
   }
 
   @Transactional(readOnly = true)
   public Cliente getByCpf(String cpf) {
-    return clienteRepository.findByCpf(cpf)
+    return clienteRepository.findByCpf(cpf.replaceAll("[^0-9]", ""))
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
             "Cliente não encontrado com o CPF: " + cpf));
   }
 
   @Transactional(readOnly = true)
   public Cliente getByCnpj(String cnpj) {
-    return clienteRepository.findByCnpj(cnpj)
+    return clienteRepository.findByCnpj(cnpj.replaceAll("[^0-9]", ""))
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
             "Cliente não encontrado com o CNPJ: " + cnpj));
   }
 
   @Transactional(readOnly = true)
-  public List<Cliente> getAllByLeadScore(Float leadScore) {
-    return clienteRepository.findByLeadScore(leadScore);
+  public Page<Cliente> getAllByLeadScore(Float leadScore, int numeroPagina, int tamanhoPagina, String campoOrdenacao,
+      String direcaoOrdenacao) {
+    if (!StringUtils.hasText(campoOrdenacao)) {
+      campoOrdenacao = "leadScore";
+    }
+    if (!StringUtils.hasText(direcaoOrdenacao)
+        || (!direcaoOrdenacao.equalsIgnoreCase("asc") && !direcaoOrdenacao.equalsIgnoreCase("desc"))) {
+      direcaoOrdenacao = "asc";
+    }
+    Sort sort = Sort.by(Sort.Direction.fromString(direcaoOrdenacao.toUpperCase()), campoOrdenacao);
+    Pageable pageable = PageRequest.of(numeroPagina, tamanhoPagina, sort);
+    return clienteRepository.findAllByLeadScore(leadScore, pageable);
   }
 
   @Transactional(readOnly = true)
-  public List<Cliente> getAllByLeadScoreGreaterThanEqual(Float leadScore) {
-    return clienteRepository.findAllByLeadScoreGreaterThanEqual(leadScore);
+  public Page<Cliente> getAllByLeadScoreGreaterThanEqual(Float leadScore, int numeroPagina, int tamanhoPagina,
+      String campoOrdenacao, String direcaoOrdenacao) {
+    if (!StringUtils.hasText(campoOrdenacao)) {
+      campoOrdenacao = "leadScore";
+    }
+    if (!StringUtils.hasText(direcaoOrdenacao)
+        || (!direcaoOrdenacao.equalsIgnoreCase("asc") && !direcaoOrdenacao.equalsIgnoreCase("desc"))) {
+      direcaoOrdenacao = "asc";
+    }
+    Sort sort = Sort.by(Sort.Direction.fromString(direcaoOrdenacao.toUpperCase()), campoOrdenacao);
+    Pageable pageable = PageRequest.of(numeroPagina, tamanhoPagina, sort);
+    return clienteRepository.findAllByLeadScoreGreaterThanEqual(leadScore, pageable);
   }
 
   @Transactional(readOnly = true)
-  public List<Cliente> getAllByLeadScoreLessThanEqual(Float leadScore) {
-    return clienteRepository.findAllByLeadScoreLessThanEqual(leadScore);
+  public Page<Cliente> getAllByLeadScoreLessThanEqual(Float leadScore, int numeroPagina, int tamanhoPagina,
+      String campoOrdenacao, String direcaoOrdenacao) {
+    if (!StringUtils.hasText(campoOrdenacao)) {
+      campoOrdenacao = "leadScore";
+    }
+    if (!StringUtils.hasText(direcaoOrdenacao)
+        || (!direcaoOrdenacao.equalsIgnoreCase("asc") && !direcaoOrdenacao.equalsIgnoreCase("desc"))) {
+      direcaoOrdenacao = "asc";
+    }
+    Sort sort = Sort.by(Sort.Direction.fromString(direcaoOrdenacao.toUpperCase()), campoOrdenacao);
+    Pageable pageable = PageRequest.of(numeroPagina, tamanhoPagina, sort);
+    return clienteRepository.findAllByLeadScoreLessThanEqual(leadScore, pageable);
   }
 
   private record DocumentosValidados(String cpf, String cnpj) {
   }
 
-  private DocumentosValidados validarEPrepararDocumentos(ClienteRequestDTO dto) {
-    String cpfRequest = dto.getCpf();
-    String cnpjRequest = dto.getCnpj();
+  private DocumentosValidados validarEPrepararDocumentos(ClienteRequestDTO dto, boolean isCreate) {
+    String cpfRequest = dto.getCpf() != null ? dto.getCpf().replaceAll("[^0-9]", "") : null;
+    String cnpjRequest = dto.getCnpj() != null ? dto.getCnpj().replaceAll("[^0-9]", "") : null;
 
-    if (cpfRequest != null) {
-      cpfRequest = cpfRequest.trim();
-      if (cpfRequest.isEmpty()) {
-        cpfRequest = null;
-      }
-    }
-    if (cnpjRequest != null) {
-      cnpjRequest = cnpjRequest.trim();
-      if (cnpjRequest.isEmpty()) {
-        cnpjRequest = null;
+    if (cpfRequest != null && cpfRequest.trim().isEmpty())
+      cpfRequest = null;
+    if (cnpjRequest != null && cnpjRequest.trim().isEmpty())
+      cnpjRequest = null;
+
+    if (isCreate) {
+      if (cpfRequest == null && cnpjRequest == null) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            "É necessário informar CPF ou CNPJ para cadastrar um novo cliente.");
       }
     }
 
     if (cpfRequest != null && cnpjRequest != null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          "Não é possível informar CPF e CNPJ ao mesmo tempo.");
-    }
-
-    if (cpfRequest == null && cnpjRequest == null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          "É necessário informar pelo menos um dos campos: CPF ou CNPJ.");
+          "Não é possível informar CPF e CNPJ ao mesmo tempo. Escolha um ou outro.");
     }
     return new DocumentosValidados(cpfRequest, cnpjRequest);
   }
 
   @Transactional
   public Cliente create(ClienteRequestDTO clienteRequestDTO) {
-    DocumentosValidados docs = validarEPrepararDocumentos(clienteRequestDTO);
+    DocumentosValidados docs = validarEPrepararDocumentos(clienteRequestDTO, true);
     String cpfValidado = docs.cpf();
     String cnpjValidado = docs.cnpj();
 
     Cliente cliente = new Cliente();
-    cliente.setNome(clienteRequestDTO.getNome());
+    if (!StringUtils.hasText(clienteRequestDTO.getNome())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O nome do cliente é obrigatório.");
+    }
+    cliente.setNome(clienteRequestDTO.getNome().trim());
     cliente.setFoto(clienteRequestDTO.getFoto());
 
-    if (clienteRequestDTO.getEmail() != null && !clienteRequestDTO.getEmail().trim().isEmpty()) {
+    if (StringUtils.hasText(clienteRequestDTO.getEmail())) {
       String emailTrimmed = clienteRequestDTO.getEmail().trim();
       if (clienteRepository.findByEmailIgnoreCase(emailTrimmed).isPresent()) {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado.");
@@ -135,8 +204,8 @@ public class ClienteService {
       cliente.setEmail(emailTrimmed);
     }
 
-    if (clienteRequestDTO.getTelefone() != null && !clienteRequestDTO.getTelefone().trim().isEmpty()) {
-      String telefoneTrimmed = clienteRequestDTO.getTelefone().trim();
+    if (StringUtils.hasText(clienteRequestDTO.getTelefone())) {
+      String telefoneTrimmed = clienteRequestDTO.getTelefone().trim().replaceAll("[^0-9]", "");
       if (clienteRepository.findByTelefoneIgnoreCase(telefoneTrimmed).isPresent()) {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Telefone já cadastrado.");
       }
@@ -169,34 +238,46 @@ public class ClienteService {
     Cliente clienteExistente = clienteRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado com o ID: " + id));
 
-    DocumentosValidados docs = validarEPrepararDocumentos(clienteRequestDTO);
+    DocumentosValidados docs = validarEPrepararDocumentos(clienteRequestDTO, false);
     String cpfValidado = docs.cpf();
     String cnpjValidado = docs.cnpj();
 
-    if (clienteRequestDTO.getNome() != null && !clienteRequestDTO.getNome().trim().isEmpty()) {
+    if (StringUtils.hasText(clienteRequestDTO.getNome())) {
       clienteExistente.setNome(clienteRequestDTO.getNome().trim());
     }
 
-    if (clienteRequestDTO.getEmail() != null && !clienteRequestDTO.getEmail().trim().isEmpty()) {
-      String emailNovo = clienteRequestDTO.getEmail().trim();
-      if (clienteExistente.getEmail() == null || !emailNovo.equalsIgnoreCase(clienteExistente.getEmail())) {
-        Optional<Cliente> clienteComMesmoEmail = clienteRepository.findByEmailIgnoreCase(emailNovo);
-        if (clienteComMesmoEmail.isPresent() && !clienteComMesmoEmail.get().getId().equals(id)) {
-          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado para outro cliente.");
-        }
-      }
-      clienteExistente.setEmail(emailNovo);
+    if (clienteRequestDTO.getFoto() != null) {
+      clienteExistente.setFoto(clienteRequestDTO.getFoto().isEmpty() ? null : clienteRequestDTO.getFoto());
     }
 
-    if (clienteRequestDTO.getTelefone() != null && !clienteRequestDTO.getTelefone().trim().isEmpty()) {
-      String telefoneNovo = clienteRequestDTO.getTelefone().trim();
-      if (clienteExistente.getTelefone() == null || !telefoneNovo.equalsIgnoreCase(clienteExistente.getTelefone())) {
-        Optional<Cliente> clienteComMesmoTelefone = clienteRepository.findByTelefoneIgnoreCase(telefoneNovo);
-        if (clienteComMesmoTelefone.isPresent() && !clienteComMesmoTelefone.get().getId().equals(id)) {
-          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Telefone já cadastrado para outro cliente.");
+    if (clienteRequestDTO.getEmail() != null) {
+      String emailNovo = clienteRequestDTO.getEmail().trim();
+      if (emailNovo.isEmpty()) {
+        clienteExistente.setEmail(null);
+      } else {
+        if (clienteExistente.getEmail() == null || !emailNovo.equalsIgnoreCase(clienteExistente.getEmail())) {
+          Optional<Cliente> clienteComMesmoEmail = clienteRepository.findByEmailIgnoreCase(emailNovo);
+          if (clienteComMesmoEmail.isPresent() && !clienteComMesmoEmail.get().getId().equals(id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado para outro cliente.");
+          }
         }
+        clienteExistente.setEmail(emailNovo);
       }
-      clienteExistente.setTelefone(telefoneNovo);
+    }
+
+    if (clienteRequestDTO.getTelefone() != null) {
+      String telefoneNovo = clienteRequestDTO.getTelefone().trim().replaceAll("[^0-9]", "");
+      if (telefoneNovo.isEmpty()) {
+        clienteExistente.setTelefone(null);
+      } else {
+        if (clienteExistente.getTelefone() == null || !telefoneNovo.equalsIgnoreCase(clienteExistente.getTelefone())) {
+          Optional<Cliente> clienteComMesmoTelefone = clienteRepository.findByTelefoneIgnoreCase(telefoneNovo);
+          if (clienteComMesmoTelefone.isPresent() && !clienteComMesmoTelefone.get().getId().equals(id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Telefone já cadastrado para outro cliente.");
+          }
+        }
+        clienteExistente.setTelefone(telefoneNovo);
+      }
     }
 
     if (cpfValidado != null) {
@@ -230,11 +311,10 @@ public class ClienteService {
 
   @Transactional
   public void delete(Long id) {
-
     if (!clienteRepository.existsById(id)) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado com o ID: " + id);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+          "Cliente não encontrado com o ID: " + id + " para exclusão.");
     }
     clienteRepository.deleteById(id);
   }
-
 }

@@ -109,8 +109,6 @@ public class Cliente {
   @Schema(description = "Data e hora da última atualização do registro do cliente.", example = "2024-05-31T14:30:00", accessMode = Schema.AccessMode.READ_ONLY)
   private LocalDateTime updatedAt;
 
-  // Getters e Setters
-
   public Long getId() {
     return id;
   }
