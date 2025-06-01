@@ -16,59 +16,56 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 public class SwaggerConfig {
 
   @Bean
-  public OpenAPI talentysOpenAPI() {
-    String descricao = "O Sistema de Cadastro de RH (Talentys) é uma aplicação backend desenvolvida para gerenciar os principais processos da área de Recursos Humanos.\n\n"
-        +
-        "Esta API RESTful foi construída com Java e Spring Boot, seguindo boas práticas de arquitetura e segurança. " +
-        "Ela fornece endpoints para integração com futuros sistemas frontend ou outras aplicações corporativas.\n\n" +
+  public OpenAPI connectUsCrmOpenAPI() {
+    String descricao = "A API ConnectUs CRM é uma solução backend robusta, desenvolvida em Java com Spring Boot, " +
+        "projetada para otimizar e gerenciar interações e relacionamentos com clientes.\n\n" +
+        "Esta API RESTful oferece um conjunto de endpoints para facilitar a integração com sistemas frontend " +
+        "e outras aplicações corporativas, centralizando as informações e processos de CRM.\n\n" +
         "**Principais Funcionalidades da API:**\n" +
-        "* Cadastro e gerenciamento de colaboradores\n" +
-        "* Controle de recrutamento e seleção\n" +
-        "* Registro de jornada de trabalho e controle de ponto\n" +
-        "* Geração de dados para folha de pagamento\n" +
-        "* Gerenciamento de treinamentos e desenvolvimento";
+        "* **Gerenciamento de Clientes (CRUD):** Cadastro, consulta, atualização, exclusão e busca de clientes (pessoas físicas e jurídicas).\n"
+        +
+        "* **Gestão de Oportunidades de Venda (CRUD):** Criação, acompanhamento, atualização de status (Aberta, Fechada, Perdida) e exclusão de oportunidades.\n"
+        +
+        "* **Gerenciamento de Usuários do Sistema:** Cadastro, consulta e atualização de usuários internos.\n" +
+        "* **Relacionamentos:** Associação de oportunidades a clientes e usuários responsáveis.\n" +
+        "* **Qualificação de Leads:** Cálculo e atribuição de Lead Score para clientes.\n";
 
     return new OpenAPI()
         .info(new Info()
-            .title("ConnectUs")
+            .title("ConnectUs CRM API")
             .description(descricao)
             .version("v0.0.1")
             .license(new License()
-                .name("Generations Brasil")
+                .name("Generation Brasil / Grupo 02 - Turma Java 82")
                 .url("https://brazil.generation.org/"))
             .contact(new Contact()
-                .name("Grupo 02 - Turma Java 82 (Projeto ConnectUs)")
+                .name("Grupo 02 - Turma Java 82 (Projeto ConnectUs CRM)")
                 .url("https://github.com/Grupo-02-Turma-Java-82/Connectus_CRM")
                 .email("grupo02turmajava82@hotmail.com")))
         .externalDocs(new ExternalDocumentation()
-            .description("Github do Projeto")
+            .description("Repositório do Projeto no Github")
             .url("https://github.com/Grupo-02-Turma-Java-82/Connectus_CRM"));
   }
 
   @Bean
   OpenApiCustomizer customerGlobalHeaderOpenApiCustomiser() {
-
     return openApi -> {
       openApi.getPaths().values().forEach(pathItem -> pathItem.readOperations().forEach(operation -> {
-
         ApiResponses apiResponses = operation.getResponses();
-
         apiResponses.addApiResponse("200", createApiResponse("Sucesso!"));
-        apiResponses.addApiResponse("201", createApiResponse("Objeto Persistido!"));
-        apiResponses.addApiResponse("204", createApiResponse("Objeto Excluído!"));
-        apiResponses.addApiResponse("400", createApiResponse("Erro na Requisição!"));
-        apiResponses.addApiResponse("401", createApiResponse("Acesso Não Autorizado!"));
-        apiResponses.addApiResponse("403", createApiResponse("Acesso Proibido!"));
-        apiResponses.addApiResponse("404", createApiResponse("Objeto Não Encontrado!"));
-        apiResponses.addApiResponse("500", createApiResponse("Erro na Aplicação!"));
-
+        apiResponses.addApiResponse("201", createApiResponse("Objeto Criado/Persistido!"));
+        apiResponses.addApiResponse("204",
+            createApiResponse("Operação bem-sucedida, sem conteúdo de retorno (Ex: Objeto Excluído)."));
+        apiResponses.addApiResponse("400", createApiResponse("Erro na Requisição (Ex: Dados inválidos)."));
+        apiResponses.addApiResponse("401", createApiResponse("Acesso Não Autorizado (Requer autenticação)."));
+        apiResponses.addApiResponse("403", createApiResponse("Acesso Proibido (Autenticado, mas sem permissão)."));
+        apiResponses.addApiResponse("404", createApiResponse("Recurso Não Encontrado."));
+        apiResponses.addApiResponse("500", createApiResponse("Erro Interno na Aplicação."));
       }));
     };
   }
 
   private ApiResponse createApiResponse(String message) {
-
     return new ApiResponse().description(message);
-
   }
 }

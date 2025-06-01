@@ -12,9 +12,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
   List<Cliente> findAllByNomeContainingIgnoreCase(String nome);
 
-  Optional<Cliente> findByEmailContainingIgnoreCase(String email);
+  Optional<Cliente> findByEmailIgnoreCase(String email);
 
-  Optional<Cliente> findByTelefoneContainingIgnoreCase(String telefone);
+  Optional<Cliente> findByTelefoneIgnoreCase(String telefone);
 
   List<Cliente> findAllByTipoPessoa(TipoPessoa tipoPessoa);
 
