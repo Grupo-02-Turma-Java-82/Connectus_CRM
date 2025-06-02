@@ -9,6 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvBindByPosition;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -55,12 +58,16 @@ public class Cliente {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Schema(description = "Identificador único do cliente.", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
+  @CsvBindByPosition(position = 0)
+  @CsvBindByName(column = "Id")
   private Long id;
 
   @NotBlank(message = "O nome é obrigatório.")
   @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres.")
   @Column(length = 100, nullable = false)
   @Schema(description = "Nome completo ou Razão Social do cliente.", example = "João da Silva / Empresa XYZ Ltda", requiredMode = Schema.RequiredMode.REQUIRED, minLength = 3, maxLength = 100)
+  @CsvBindByPosition(position = 1)
+  @CsvBindByName(column = "Nome Cliente")
   private String nome;
 
   @NotBlank(message = "O e-mail é obrigatório.")
@@ -68,49 +75,67 @@ public class Cliente {
   @Size(max = 100, message = "O e-mail não pode exceder 100 caracteres.")
   @Column(length = 100, nullable = false, unique = true)
   @Schema(description = "Endereço de e-mail principal do cliente.", example = "contato@empresaxyz.com", requiredMode = Schema.RequiredMode.REQUIRED, maxLength = 100)
+  @CsvBindByPosition(position = 2)
+  @CsvBindByName(column = "Email")
   private String email;
 
   @Size(max = 5000, message = "O URL da foto não pode exceder 5000 caracteres.")
   @Column(length = 5000)
   @Schema(description = "URL para a foto de perfil ou logo do cliente.", example = "https://example.com/foto_cliente.jpg", maxLength = 5000)
+  @CsvBindByPosition(position = 3)
+  @CsvBindByName(column = "Foto Link")
   private String foto;
 
   @Pattern(regexp = "^((\\(\\d{2}\\)\\s?)|(\\d{2}\\s))?\\d{4,5}-?\\d{4}$|^\\d{10,11}$", message = "O telefone deve estar em um formato válido, como (XX) XXXXX-XXXX, XXXXXXXXXXX ou XX XXXXX-XXXX.")
   @Size(min = 8, max = 20, message = "O telefone deve ter entre 8 e 20 caracteres.")
   @Column(length = 20)
   @Schema(description = "Número de telefone principal do cliente.", example = "(11) 98765-4321", pattern = "^((\\(\\d{2}\\)\\s?)|(\\d{2}\\s))?\\d{4,5}-?\\d{4}$|^\\d{10,11}$", minLength = 8, maxLength = 20)
+  @CsvBindByPosition(position = 4)
+  @CsvBindByName(column = "Telefone")
   private String telefone;
 
   @NotNull(message = "O tipo de pessoa é obrigatório.")
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 10)
   @Schema(description = "Define se o cliente é Pessoa Física ou Jurídica.", example = "FISICA", requiredMode = Schema.RequiredMode.REQUIRED)
+  @CsvBindByPosition(position = 5)
+  @CsvBindByName(column = "Pessoa Física/Jurídica")
   private TipoPessoa tipoPessoa;
 
   @CPF(message = "O CPF deve ser válido.")
   @Column(length = 14, unique = true)
   @Schema(description = "Cadastro de Pessoa Física (CPF) do cliente. Obrigatório se tipoPessoa for FISICA. Deve ser único. Será armazenado apenas com números.", example = "12345678900")
+  @CsvBindByPosition(position = 6)
+  @CsvBindByName(column = "CPF")
   private String cpf;
 
   @CNPJ(message = "O CNPJ deve ser válido.")
   @Column(length = 18, unique = true)
   @Schema(description = "Cadastro Nacional da Pessoa Jurídica (CNPJ) do cliente. Obrigatório se tipoPessoa for JURIDICA. Deve ser único. Será armazenado apenas com números.", example = "12345678000199")
+  @CsvBindByPosition(position = 7)
+  @CsvBindByName(column = "CNPJ")
   private String cnpj;
 
   @Min(value = 0, message = "O lead score deve ser no mínimo 0.")
   @Max(value = 10, message = "O lead score deve ser no máximo 10.")
   @Column
   @Schema(description = "Pontuação do lead, indicando o potencial de conversão do cliente.", example = "7.5", minimum = "0", maximum = "10")
+  @CsvBindByPosition(position = 8)
+  @CsvBindByName(column = "Lead Score")
   private Float leadScore;
 
   @CreationTimestamp
   @Column(nullable = false, updatable = false)
   @Schema(description = "Data e hora de criação do registro do cliente.", example = "2024-05-30T10:15:30", accessMode = Schema.AccessMode.READ_ONLY)
+  @CsvBindByPosition(position = 9)
+  @CsvBindByName(column = "Data Criado")
   private LocalDateTime createdAt;
 
   @UpdateTimestamp
   @Column(nullable = false)
   @Schema(description = "Data e hora da última atualização do registro do cliente.", example = "2024-05-31T14:30:00", accessMode = Schema.AccessMode.READ_ONLY)
+  @CsvBindByPosition(position = 10)
+  @CsvBindByName(column = "Data Removido")
   private LocalDateTime updatedAt;
   
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "cliente", cascade = CascadeType.ALL)

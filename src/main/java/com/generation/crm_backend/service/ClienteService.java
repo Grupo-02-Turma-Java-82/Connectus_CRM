@@ -1,5 +1,7 @@
 package com.generation.crm_backend.service;
 
+import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,12 @@ public class ClienteService {
     Pageable pageable = PageRequest.of(numeroPagina, tamanhoPagina, sort);
     return clienteRepository.findAll(pageable);
   }
+  
+  @Transactional(readOnly = true)
+  public List<Cliente> getAllWithoutPagination() {
+    return clienteRepository.findAll();
+  }
+
 
   @Transactional(readOnly = true)
   public Optional<Cliente> getById(Long id) {
