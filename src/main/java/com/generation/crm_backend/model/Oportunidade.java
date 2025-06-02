@@ -3,6 +3,7 @@ package com.generation.crm_backend.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -28,25 +29,30 @@ public class Oportunidade {
 	@NotNull(message = "O ID do usuário é obrigatório!")
 	private Long idUsuario;
 
+	@Column(length = 100, nullable = false)
 	@NotBlank(message = "O título da oportunidade é obrigatório!")
 	@Size(min = 5, max = 100, message = "O atributo título deve ter no minimo 5 e no máximo 100 caracteres.")
 	private String titulo;
 
+	@Column(length = 1000)
 	@Size(max = 1000, message = "A descrição deve ter no máximo máximo 1000 caracteres.")
 	private String descricao;
 
 	@NotNull(message = "O valor estimado é obrigatório!")
+	@Column(name = "valor_estimado", nullable = false, precision = 10, scale = 2)
 	private BigDecimal valorEstimado;
 
 	@Enumerated(EnumType.STRING)
 	@NotNull(message = "O status da oportunidade é obrigatório!")
+	@Column(name = "status_oportunidade", nullable = false, length = 50)
 	private StatusOportunidade status;
 
 	@NotNull(message = "A data de criação é obrigatória!")
+	@Column(name = "data_criacao", nullable = false)
 	private LocalDate dataCriacao;
 
 	public Oportunidade() {
-		this.dataCriacao = LocalDate.now(); //data atual do sistema
+		this.dataCriacao = LocalDate.now(); // data atual do sistema
 		this.status = StatusOportunidade.NOVA;
 	}
 
@@ -114,4 +120,3 @@ public class Oportunidade {
 		this.dataCriacao = dataCriacao;
 	}
 }
-
