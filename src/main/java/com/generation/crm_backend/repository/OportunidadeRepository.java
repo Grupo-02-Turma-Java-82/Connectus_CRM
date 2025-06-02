@@ -14,5 +14,6 @@ public interface OportunidadeRepository extends JpaRepository<Oportunidade, Long
     List<Oportunidade> findByStatus(StatusOportunidade status);
     List<Oportunidade> findByIdCliente(Long idCliente);
     List<Oportunidade> findByIdUsuario(Long idUsuario);
+    List<Oportunidade> findAllByTituloContainingIgnoreCase(String titulo);
 
 }

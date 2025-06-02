@@ -56,6 +56,10 @@ public class Oportunidade {
     @ManyToOne
     @JoinColumn(name = "usuario")
     private Usuario usuario;
+    
+    @ManyToOne
+    @JoinColumn(name = "cliente")
+    private Cliente cliente;
 
 	public Oportunidade() {
 		this.dataCriacao = LocalDate.now(); // data atual do sistema
