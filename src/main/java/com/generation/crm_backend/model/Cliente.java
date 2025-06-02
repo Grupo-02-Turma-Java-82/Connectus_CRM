@@ -1,7 +1,7 @@
 package com.generation.crm_backend.model;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,10 +10,12 @@ import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +27,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.OneToMany;
 
 @Entity
 @Table(name = "tb_clientes")
@@ -109,6 +112,9 @@ public class Cliente {
   @Column(nullable = false)
   @Schema(description = "Data e hora da última atualização do registro do cliente.", example = "2024-05-31T14:30:00", accessMode = Schema.AccessMode.READ_ONLY)
   private LocalDateTime updatedAt;
+  
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "cliente", cascade = CascadeType.ALL)
+  private List<Oportunidade> oportunidade;
 
   public Long getId() {
     return id;

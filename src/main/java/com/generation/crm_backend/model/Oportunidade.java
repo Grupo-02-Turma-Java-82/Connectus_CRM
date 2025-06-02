@@ -10,6 +10,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -50,6 +52,10 @@ public class Oportunidade {
 	@NotNull(message = "A data de criação é obrigatória!")
 	@Column(name = "data_criacao", nullable = false)
 	private LocalDate dataCriacao;
+	
+    @ManyToOne
+    @JoinColumn(name = "usuario")
+    private Usuario usuario;
 
 	public Oportunidade() {
 		this.dataCriacao = LocalDate.now(); // data atual do sistema
