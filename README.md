@@ -2,7 +2,7 @@
 # 🤝 ConnectUs CRM - Sistema de Gestão de Oportunidades
 
 <div align="center">
-    <img src="https://imgur.com/a/LLZczuE" title="ConnectUs Logo" width="200" />
+    <img src="https://i.imgur.com/0bfjbcj.png" title="ConnectUs Logo" width="200" />
 </div>
 
 <br />
