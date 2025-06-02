@@ -3,6 +3,8 @@ package com.generation.crm_backend.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -48,31 +50,17 @@ public class Oportunidade {
 	@Column(name = "data_criacao", nullable = false)
 	private LocalDate dataCriacao;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_usuario_fk", nullable = false)
-	@NotNull(message = "O Usuário é obrigatório")
+	// relaciona c usuario
+	@ManyToOne
+	@JoinColumn(name = "usuario_id", nullable = false) // nome_da_entidade_id
+	@JsonIgnoreProperties({ "oportunidade" })
 	private Usuario usuario;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_cliente_fk", nullable = false)
-	@NotNull(message = "O Cliente é obrigatório")
+	// relaciona c cliente
+	@ManyToOne
+	@JoinColumn(name = "cliente_id", nullable = false) // nome_da_entidade_id
+	@JsonIgnoreProperties({ "oportunidade" })
 	private Cliente cliente;
-
-	public Usuario getUsuario() {
-		return this.usuario;
-	}
-
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
-
-	public Cliente getCliente() {
-		return this.cliente;
-	}
-
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
-	}
 
 	public Oportunidade() {
 		this.dataCriacao = LocalDate.now(); // data atual do sistema
@@ -126,4 +114,22 @@ public class Oportunidade {
 	public void setDataCriacao(LocalDate dataCriacao) {
 		this.dataCriacao = dataCriacao;
 	}
+
+	// getter setter usuario e cliente
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
+
 }

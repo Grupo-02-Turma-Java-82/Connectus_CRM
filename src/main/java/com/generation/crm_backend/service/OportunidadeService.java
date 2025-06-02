@@ -22,12 +22,12 @@ public class OportunidadeService {
 
 	@Autowired
 	private OportunidadeRepository oportunidadeRepository;
+	
+	@Autowired
+    private ClienteRepository clienteRepository; //injeta clienteRepository
 
 	@Autowired
-	private ClienteRepository clienteRepository;
-
-	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UsuarioRepository usuarioRepository; //injeta usuarioRepository
 
 	@Transactional(readOnly = true)
 	public List<Oportunidade> findAll() {
@@ -44,6 +44,19 @@ public class OportunidadeService {
 		return oportunidadeRepository.findByStatus(status);
 	}
 
+	public List<Oportunidade> findByClienteId(Long idCliente) {
+		return oportunidadeRepository.findByClienteId(idCliente);
+	}
+
+	public List<Oportunidade> findByUsuarioId(Long idUsuario) {
+		return oportunidadeRepository.findByUsuarioId(idUsuario);
+	}
+
+	public List<Oportunidade> findAllByTituloContainingIgnoreCase(String titulo) {
+		return oportunidadeRepository.findAllByTituloContainingIgnoreCase(titulo);
+	}
+
+	//lidar com objetos cliente usuario
 	@Transactional
 	public Oportunidade save(Oportunidade oportunidadeRecebida) {
 		Oportunidade novaOportunidade = new Oportunidade();
@@ -80,6 +93,26 @@ public class OportunidadeService {
 		novaOportunidade.setUsuario(usuarioAssociado);
 
 		return oportunidadeRepository.save(novaOportunidade);
+	}
+
+	//lidar com obj cliente usuario
+	public Oportunidade update(Oportunidade oportunidade) {
+
+		if (oportunidade.getId() == null || !oportunidadeRepository.existsById(oportunidade.getId())) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+					"Oportunidade com ID " + oportunidade.getId() + " não encontrada para atualização...");
+		}
+
+		Cliente cliente = clienteRepository.findById(oportunidade.getCliente().getId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado!"));
+
+		Usuario usuario = usuarioRepository.findById(oportunidade.getUsuario().getId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado!"));
+
+		oportunidade.setCliente(cliente);
+		oportunidade.setUsuario(usuario);
+
+		return oportunidadeRepository.save(oportunidade);
 	}
 
 	@Transactional
@@ -130,7 +163,7 @@ public class OportunidadeService {
 	public void deleteById(Long id) {
 		if (!oportunidadeRepository.existsById(id)) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-					"Oportunidade com ID " + id + " não encontrada para exclusão.");
+				"Oportunidade com ID " + id + " não encontrada para exclusão!");
 		}
 		oportunidadeRepository.deleteById(id);
 	}

@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.crm_backend.model.Oportunidade;
+import com.generation.crm_backend.model.StatusOportunidade;
 import com.generation.crm_backend.repository.OportunidadeRepository;
+import com.generation.crm_backend.service.OportunidadeService;
 
 // Importações do Swagger/OpenAPI
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,9 +35,13 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/oportunidades")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
+
 @Tag(name = "Oportunidade", description = "Gerencia as Oportunidades de Negócio no CRM") // Define o grupo para esta API no Swagger UI
 public class OportunidadeController {
 
+	@Autowired
+	private OportunidadeService oportunidadeService;
+	
 	@Autowired
 	private OportunidadeRepository oportunidadeRepository;
 
@@ -46,11 +52,8 @@ public class OportunidadeController {
 	})
 	@GetMapping
 	public ResponseEntity<List<Oportunidade>> getAll() {
-		List<Oportunidade> oportunidades = oportunidadeRepository.findAll();
-		if (oportunidades.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // Retorna 204 se a lista estiver vazia
-		}
-		return ResponseEntity.ok(oportunidades);
+
+		return ResponseEntity.ok(oportunidadeService.findAll());
 	}
 
 	@Operation(summary = "Busca Oportunidade por ID", description = "Retorna os detalhes de uma oportunidade específica com base no seu ID.")
@@ -60,8 +63,8 @@ public class OportunidadeController {
 	})
 	@GetMapping("/{id}")
 	public ResponseEntity<Oportunidade> getById(@PathVariable Long id) {
-		return oportunidadeRepository.findById(id)
-				.map(ResponseEntity::ok) // Simplificação do map
+		return oportunidadeService.findById(id).map(resposta -> ResponseEntity.ok(resposta))
+
 				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 
@@ -71,8 +74,36 @@ public class OportunidadeController {
 			@ApiResponse(responseCode = "204", description = "Nenhuma oportunidade encontrada com o título informado")
 	})
 	@GetMapping("/titulo/{titulo}")
-	public ResponseEntity<List<Oportunidade>> getByTitulo(@PathVariable String titulo) {
-		List<Oportunidade> oportunidades = oportunidadeRepository.findAllByTituloContainingIgnoreCase(titulo);
+
+	public ResponseEntity<Object> getByTitulo(@PathVariable String titulo) {
+		List<Oportunidade> oportunidades = oportunidadeService.findAllByTituloContainingIgnoreCase(titulo);
+		if (oportunidades.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		return ResponseEntity.ok(oportunidades);
+	}
+
+	@GetMapping("/status/{status}")
+	public ResponseEntity<List<Oportunidade>> getByStatus(@PathVariable StatusOportunidade status) {
+		List<Oportunidade> oportunidades = oportunidadeService.findByStatus(status);
+		if (oportunidades.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		return ResponseEntity.ok(oportunidades);
+	}
+
+	@GetMapping("/cliente/{idCliente}")
+	public ResponseEntity<List<Oportunidade>> getByClienteId(@PathVariable Long idCliente) {
+		List<Oportunidade> oportunidades = oportunidadeService.findByClienteId(idCliente);
+		if (oportunidades.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		return ResponseEntity.ok(oportunidades);
+	}
+
+	@GetMapping("/usuario/{idUsuario}")
+	public ResponseEntity<List<Oportunidade>> getByUsuarioId(@PathVariable Long idUsuario) {
+		List<Oportunidade> oportunidades = oportunidadeService.findByUsuarioId(idUsuario);
 		if (oportunidades.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
@@ -87,7 +118,8 @@ public class OportunidadeController {
 	})
 	@PostMapping
 	public ResponseEntity<Oportunidade> post(@Valid @RequestBody Oportunidade oportunidade) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(oportunidadeRepository.save(oportunidade));
+		// validaçao na camada de servico!!
+		return ResponseEntity.status(HttpStatus.CREATED).body(oportunidadeService.save(oportunidade));
 	}
 
 	@Operation(summary = "Atualiza uma Oportunidade existente", description = "Modifica os dados de uma oportunidade já cadastrada. É necessário fornecer o ID da oportunidade no corpo da requisição.")
@@ -99,6 +131,7 @@ public class OportunidadeController {
 	})
 	@PutMapping
 	public ResponseEntity<Oportunidade> put(@Valid @RequestBody Oportunidade oportunidade) {
+
 		if (oportunidade.getId() == null) {
 			return ResponseEntity.badRequest().build(); // ID é obrigatório para PUT
 		}
@@ -107,7 +140,13 @@ public class OportunidadeController {
 			return ResponseEntity.status(HttpStatus.OK).body(oportunidadeRepository.save(oportunidade));
 		}
 
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		return ResponseEntity.status(HttpStatus.OK).body(oportunidadeService.update(oportunidade));
+	}
+
+	@PutMapping("/{id}/status/{novoStatus}")
+	public ResponseEntity<Oportunidade> atualizarStatusOportunidade(@PathVariable Long id,
+			@PathVariable StatusOportunidade novoStatus) {
+		return ResponseEntity.ok(oportunidadeService.atualizarStatusOportunidade(id, novoStatus));
 	}
 
 	@Operation(summary = "Exclui uma Oportunidade", description = "Remove uma oportunidade de negócio do sistema com base no seu ID.")
@@ -124,6 +163,6 @@ public class OportunidadeController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Oportunidade não encontrada!");
 		}
 
-		oportunidadeRepository.deleteById(id);
+		oportunidadeService.deleteById(id);
 	}
 }

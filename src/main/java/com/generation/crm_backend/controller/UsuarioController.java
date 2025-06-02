@@ -87,7 +87,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado para atualização"),
             @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos")
     })
-    @PutMapping("/autualizar/{id}") // Atenção ao "autualizar" - talvez seja "atualizar"?
+    @PutMapping("/atualizar/{id}") // Atenção ao "atualizar" - talvez seja "atualizar"?
     public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         // Assume que o `atualizarUsuario` do serviço já valida o ID e o corpo da requisição.
         return usuarioService.atualizarUsuario(id, usuario)
