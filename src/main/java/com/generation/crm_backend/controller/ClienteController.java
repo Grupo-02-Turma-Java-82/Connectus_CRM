@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/clientes")
@@ -70,9 +71,14 @@ public class ClienteController {
       @ApiResponse(responseCode = "404", description = "Cliente não encontrado com o ID fornecido")
   })
   @GetMapping("/{id}")
-  public ResponseEntity<Cliente> getById(
-      @Parameter(description = "ID do cliente a ser procurado", required = true, example = "1") @PathVariable Long id) {
-    return ResponseEntity.ok(clienteService.getById(id));
+  public ResponseEntity<Cliente> getById(@Parameter(description = "ID do cliente a ser procurado", required = true, example = "1") @PathVariable Long id) {
+	Optional<Cliente> cliente = clienteService.getById(id);
+
+	if (cliente.isPresent()) {		
+		return ResponseEntity.ok(cliente.get());
+	} else {
+		return ResponseEntity.notFound().build();
+	}
   }
 
   @Operation(summary = "Procurar clientes por nome com paginação e ordenação", description = "Retorna uma página de clientes cujo nome contenha o termo pesquisado (case-insensitive), com opções de paginação e ordenação.")

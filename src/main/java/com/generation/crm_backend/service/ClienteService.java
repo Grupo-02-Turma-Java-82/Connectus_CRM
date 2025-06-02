@@ -43,9 +43,8 @@ public class ClienteService {
   }
 
   @Transactional(readOnly = true)
-  public Cliente getById(Long id) {
-    return clienteRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado com o ID: " + id));
+  public Optional<Cliente> getById(Long id) {
+    return clienteRepository.findById(id);
   }
 
   @Transactional(readOnly = true)
