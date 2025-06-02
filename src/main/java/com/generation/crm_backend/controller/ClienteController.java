@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-
-import com.generation.crm_backend.repository.ClienteRepository;
 import com.generation.crm_backend.dto.ClienteRequestDTO;
 import com.generation.crm_backend.model.Cliente;
 import com.generation.crm_backend.model.Cliente.TipoPessoa;

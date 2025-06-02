@@ -20,41 +20,46 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.crm_backend.model.Oportunidade;
 import com.generation.crm_backend.repository.OportunidadeRepository;
+import com.generation.crm_backend.service.OportunidadeService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/oportunidades") 
+@RequestMapping("/oportunidades")
 @CrossOrigin(origins = "", allowedHeaders = "")
-public class OportunidadeController { 
+public class OportunidadeController {
 
 	@Autowired
-	private OportunidadeRepository oportunidadeRepository; 
+	private OportunidadeService oportunidadeService;
+
+	@Autowired
+	private OportunidadeRepository oportunidadeRepository;
 
 	@GetMapping
 	public ResponseEntity<List<Oportunidade>> getAll() {
-		
-		return ResponseEntity.ok(oportunidadeRepository.findAll());
+
+		return ResponseEntity.ok(oportunidadeService.findAll());
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Oportunidade> getById(@PathVariable Long id) {
-		
-		return oportunidadeRepository.findById(id)
+
+		return oportunidadeService.findById(id)
 				.map(resposta -> ResponseEntity.ok(resposta))
 				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 
-	@GetMapping("/titulo/{titulo}")
-	public ResponseEntity<Object> getByTitulo(@PathVariable String titulo) {
-		
-		return ResponseEntity.ok(oportunidadeRepository.findAllByTituloContainingIgnoreCase(titulo));
-	}
+	// @GetMapping("/titulo/{titulo}")
+	// public ResponseEntity<Object> getByTitulo(@PathVariable String titulo) {
+
+	// return
+	// ResponseEntity.ok(oportunidadeService.findAllByTituloContainingIgnoreCase(titulo));
+	// }
 
 	@PostMapping
 	public ResponseEntity<Oportunidade> post(@Valid @RequestBody Oportunidade oportunidade) {
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(oportunidadeRepository.save(oportunidade));
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(oportunidadeService.save(oportunidade));
 	}
 
 	@PutMapping
@@ -63,27 +68,24 @@ public class OportunidadeController {
 			return ResponseEntity.badRequest().build();
 		}
 
-		
 		if (oportunidadeRepository.existsById(oportunidade.getId())) {
-			
-			return ResponseEntity.status(HttpStatus.OK).body(oportunidadeRepository.save(oportunidade));
+
+			return ResponseEntity.status(HttpStatus.OK).body(oportunidadeService.save(oportunidade));
 		}
-		
+
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable Long id) {
-		
+
 		Optional<Oportunidade> oportunidade = oportunidadeRepository.findById(id);
 
-		
-		if(oportunidade.isEmpty()) {
+		if (oportunidade.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Oportunidade não encontrada!");
 		}
 
-		
 		oportunidadeRepository.deleteById(id);
 	}
 }
