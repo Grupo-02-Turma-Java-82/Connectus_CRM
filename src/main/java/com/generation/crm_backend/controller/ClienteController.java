@@ -2,6 +2,7 @@ package com.generation.crm_backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +17,11 @@ import com.generation.crm_backend.dto.ClienteRequestDTO;
 import com.generation.crm_backend.model.Cliente;
 import com.generation.crm_backend.model.Cliente.TipoPessoa;
 import com.generation.crm_backend.service.ClienteService;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,7 +31,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +40,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.util.List;
 
 @RestController
 @RequestMapping("/clientes")
@@ -49,6 +59,7 @@ public class ClienteController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Lista paginada de clientes recuperada com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
   })
+
   @GetMapping
   public ResponseEntity<Page<Cliente>> getAll(
       @Parameter(description = "Número da página (começa em 0)", example = "0", name = "pagina", in = ParameterIn.QUERY) @RequestParam(value = "pagina", defaultValue = "0") int numeroPagina,
@@ -65,7 +76,39 @@ public class ClienteController {
         direcaoOrdenacao);
     return ResponseEntity.ok(paginaDeClientes);
   }
+  
+  @GetMapping("/exportar-csv") // Um path mais claro para exportação
+  public void exportarClientesCSV(HttpServletResponse response) throws IOException {
+      String fileName = "clientes-data.csv";
 
+      // Configura o cabeçalho da resposta HTTP para indicar um arquivo CSV
+      response.setContentType("text/csv");
+      response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\""); // Fechar aspas duplas
+
+      try {
+          // Cria o escritor de CSV
+          // O tipo genérico aqui (Cliente) deve corresponder ao tipo dos objetos na lista
+          StatefulBeanToCsv<Cliente> writer = new StatefulBeanToCsvBuilder<Cliente>(response.getWriter())
+                  .withSeparator(CSVWriter.DEFAULT_SEPARATOR) // Usa a vírgula como separador padrão
+                  .withOrderedResults(true) // Garante que a ordem das colunas seja a mesma dos campos do bean
+                  .build();
+
+          // Pega a lista de clientes do seu serviço
+          List<Cliente> clientes = clienteService.getAllWithoutPagination();
+
+          // Escreve os dados no CSV
+          writer.write(clientes);
+
+      } catch (CsvDataTypeMismatchException e) {
+          // Lidar com exceções de tipo de dado incompatível (ex: se um campo não puder ser mapeado)
+          response.getWriter().write("Erro ao exportar CSV: Erro de tipo de dado. Detalhes: " + e.getMessage());
+          e.printStackTrace();
+      } catch (CsvRequiredFieldEmptyException e) {
+          // Lidar com exceções de campos obrigatórios vazios (se você usou anotações @CsvBindByName(required=true))
+          response.getWriter().write("Erro ao exportar CSV: Campo obrigatório vazio. Detalhes: " + e.getMessage());
+          e.printStackTrace();
+      }
+  }
   @Operation(summary = "Procurar cliente por ID", description = "Retorna um cliente específico baseado no seu ID único.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Cliente encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))),
